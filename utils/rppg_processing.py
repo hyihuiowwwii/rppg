@@ -69,25 +69,11 @@ class RPPGMonitor:
             status_text = "Face detected"
             break
 
-        cv2.putText(
-            frame,
-            f"BPM: {self.current_bpm}",
-            (20, 40),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 255, 0),
-            2
-        )
+        cv2.putText(frame, f"BPM: {self.current_bpm}", (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        cv2.putText(
-            frame,
-            status_text,
-            (20, 80),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.7,
-            (255, 255, 255),
-            2
-        )
+        cv2.putText(frame, status_text, (20, 80),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         return frame
 

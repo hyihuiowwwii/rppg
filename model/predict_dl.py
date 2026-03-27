@@ -1,16 +1,25 @@
 import numpy as np
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
+from tensorflow.keras.optimizers import Adam
 
-model = load_model("bpm_model.h5")
+# Dummy training data for project structure
+# In next phase, replace with real extracted signal windows from dataset
+X = np.random.rand(200, 150, 1).astype(np.float32)
+y = np.random.randint(60, 100, size=(200, 1)).astype(np.float32)
 
-def predict_bpm_from_signal(signal_window):
-    signal_window = np.array(signal_window, dtype=np.float32)
+model = Sequential()
+model.add(Conv1D(32, 3, activation="relu", input_shape=(150, 1)))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Conv1D(64, 3, activation="relu"))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(64, activation="relu"))
+model.add(Dense(1))
 
-    if len(signal_window) < 150:
-        return 0
+model.compile(optimizer=Adam(learning_rate=0.001), loss="mse", metrics=["mae"])
 
-    signal_window = signal_window[-150:]
-    signal_window = signal_window.reshape(1, 150, 1)
+model.fit(X, y, epochs=10, batch_size=16, validation_split=0.2)
 
-    prediction = model.predict(signal_window, verbose=0)
-    return float(prediction[0][0])
+model.save("bpm_model.h5")
+print("Model saved as bpm_model.h5")

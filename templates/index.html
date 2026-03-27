@@ -75,17 +75,6 @@
                 <canvas id="bpmChart"></canvas>
             </div>
         </div>
-
-        <div class="card notes-card">
-            <h2>Project Summary</h2>
-            <ul>
-                <li>Face is detected using OpenCV Haar Cascade.</li>
-                <li>Forehead region is used as ROI for color signal extraction.</li>
-                <li>Green-channel intensity values are collected over time.</li>
-                <li>FFT-based frequency analysis is used to estimate BPM in this phase.</li>
-                <li>Next phase uses deep learning on stored signal windows.</li>
-            </ul>
-        </div>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

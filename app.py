@@ -4,12 +4,13 @@ from utils.rppg_processing import RPPGMonitor
 
 app = Flask(__name__)
 
-# Live webcam
 camera = cv2.VideoCapture(0)
 
-# Dataset sample video
 sample_video_path = "dataset/VideoCutter_20260327191553567.mp4"
 sample_video = cv2.VideoCapture(sample_video_path)
+
+print("Video path:", sample_video_path)
+print("Video opened:", sample_video.isOpened())
 
 monitor = RPPGMonitor()
 
@@ -23,14 +24,18 @@ def video_feed():
         global camera, sample_video, monitor
 
         while True:
-            # Demo mode -> sample dataset video
             if monitor.demo_mode:
+                print("DEMO VIDEO MODE RUNNING")
                 success, frame = sample_video.read()
 
                 if not success:
                     sample_video.release()
                     sample_video = cv2.VideoCapture(sample_video_path)
-                    continue
+                    success, frame = sample_video.read()
+
+                    if not success:
+                        blank = 255 * 0
+                        break
 
                 processed_frame = monitor.process_frame(frame, source="video")
 
@@ -41,7 +46,6 @@ def video_feed():
                        b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
                 continue
 
-            # Live mode -> webcam
             success, frame = camera.read()
             if not success:
                 break

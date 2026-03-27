@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rPPG Heart Rate Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="page">
+        <div class="top-section">
+            <div>
+                <h1>Remote Heart Rate Monitoring</h1>
+                <p class="subtitle">Face-based heart rate estimation using Python, OpenCV and DL pipeline</p>
+            </div>
+            <div class="mode-box" id="modeText">Mode: Live</div>
+        </div>
+
+        <div class="main-grid">
+            <div class="camera-card card">
+                <h2>Live Camera</h2>
+                <div class="video-wrap">
+                    <img id="videoFeed" src="/video_feed" alt="video feed">
+                </div>
+
+                <div class="button-row">
+                    <button onclick="resetSession()">Reset</button>
+                    <button onclick="enableDemo()">Demo Mode</button>
+                    <button onclick="disableDemo()">Live Mode</button>
+                </div>
+            </div>
+
+            <div class="stats-card card">
+                <h2>Live Statistics</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span>Current BPM</span>
+                        <h3 id="currentBpm">0</h3>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Average BPM</span>
+                        <h3 id="avgBpm">0</h3>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Minimum BPM</span>
+                        <h3 id="minBpm">0</h3>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Maximum BPM</span>
+                        <h3 id="maxBpm">0</h3>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <p><strong>Samples Collected:</strong> <span id="samplesCount">0</span></p>
+                    <p><strong>Project Status:</strong> 50% Functional Prototype</p>
+                    <p><strong>DL Phase:</strong> Signal window training module added separately</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="card chart-card">
+                <h2>Raw rPPG Signal</h2>
+                <canvas id="signalChart"></canvas>
+            </div>
+
+            <div class="card chart-card">
+                <h2>BPM Trend</h2>
+                <canvas id="bpmChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card notes-card">
+            <h2>Project Summary</h2>
+            <ul>
+                <li>Face is detected using OpenCV Haar Cascade.</li>
+                <li>Forehead region is used as ROI for color signal extraction.</li>
+                <li>Green-channel intensity values are collected over time.</li>
+                <li>FFT-based frequency analysis is used to estimate BPM in this phase.</li>
+                <li>Next phase uses deep learning on stored signal windows.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

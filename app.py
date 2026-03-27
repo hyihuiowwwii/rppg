@@ -34,7 +34,6 @@ def video_feed():
                     success, frame = sample_video.read()
 
                     if not success:
-                        blank = 255 * 0
                         break
 
                 processed_frame = monitor.process_frame(frame, source="video")

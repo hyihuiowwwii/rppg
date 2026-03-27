@@ -3,6 +3,7 @@ import numpy as np
 import time
 from collections import deque
 
+
 class RPPGMonitor:
     def __init__(self):
         self.face_cascade = cv2.CascadeClassifier(
@@ -30,18 +31,18 @@ class RPPGMonitor:
         self.demo_mode = value
         self.reset()
 
-    def process_frame(self, frame):
-        frame = cv2.flip(frame, 1)
+    def process_frame(self, frame, source="live"):
+        if source == "live":
+            frame = cv2.flip(frame, 1)
+
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
 
         status_text = "Face not found"
 
         for (x, y, w, h) in faces:
-            # Main face box
             cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 220, 80), 2)
 
-            # Forehead ROI
             fx1 = x + int(w * 0.30)
             fy1 = y + int(h * 0.12)
             fx2 = x + int(w * 0.70)
@@ -68,11 +69,25 @@ class RPPGMonitor:
             status_text = "Face detected"
             break
 
-        cv2.putText(frame, f"BPM: {self.current_bpm}", (20, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(
+            frame,
+            f"BPM: {self.current_bpm}",
+            (20, 40),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 0),
+            2
+        )
 
-        cv2.putText(frame, status_text, (20, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(
+            frame,
+            status_text,
+            (20, 80),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (255, 255, 255),
+            2
+        )
 
         return frame
 
@@ -83,7 +98,6 @@ class RPPGMonitor:
         if len(signal) < 120:
             return 0
 
-        # Remove trend
         signal = signal - np.mean(signal)
 
         duration = times[-1] - times[0]
@@ -94,10 +108,9 @@ class RPPGMonitor:
         if fs < 5:
             return 0
 
-        freqs = np.fft.rfftfreq(len(signal), d=1/fs)
+        freqs = np.fft.rfftfreq(len(signal), d=1 / fs)
         fft_signal = np.abs(np.fft.rfft(signal))
 
-        # Human heart rate range: 48 BPM to 180 BPM
         valid = (freqs >= 0.8) & (freqs <= 3.0)
 
         if np.sum(valid) == 0:
@@ -134,52 +147,9 @@ class RPPGMonitor:
         }
 
     def get_analysis_data(self):
-        if self.demo_mode:
-            return self.get_demo_analysis_data()
-
         return {
             "signal_times": list(self.signal_times),
             "signal_values": list(self.signal_values),
             "bpm_times": list(self.bpm_times),
             "bpm_values": list(self.bpm_values)
         }
-
-    def get_demo_analysis_data(self):
-        t = np.linspace(0, 20, 200)
-        bpm_center = 78
-        freq = bpm_center / 60.0
-
-        raw_signal = 20 * np.sin(2 * np.pi * freq * t) + 100 + np.random.normal(0, 1.5, len(t))
-        bpm_curve = 78 + 2 * np.sin(0.5 * t)
-
-        return {
-            "signal_times": t.tolist(),
-            "signal_values": raw_signal.tolist(),
-            "bpm_times": t.tolist(),
-            "bpm_values": bpm_curve.tolist()
-        }
-
-    def get_demo_frame(self):
-        frame = np.zeros((480, 640, 3), dtype=np.uint8)
-        frame[:] = (30, 35, 45)
-
-        cv2.putText(frame, "Demo Mode Active", (170, 70),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-
-        cv2.rectangle(frame, (220, 120), (420, 340), (50, 220, 80), 2)
-        cv2.rectangle(frame, (280, 150), (360, 190), (0, 255, 255), 2)
-
-        fake_bpm = 78
-        self.current_bpm = fake_bpm
-        current_time = time.time() - self.start_time
-
-        self.bpm_values.append(fake_bpm)
-        self.bpm_times.append(current_time)
-
-        cv2.putText(frame, f"BPM: {fake_bpm}", (220, 390),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-        cv2.putText(frame, "Using sample signal for presentation", (130, 430),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-
-        return frame

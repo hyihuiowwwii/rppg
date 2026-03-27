@@ -8,7 +8,7 @@ app = Flask(__name__)
 camera = cv2.VideoCapture(0)
 
 # Dataset sample video
-sample_video_path = "dataset/sample_video.mp4"
+sample_video_path = "dataset/VideoCutter_20260327191553567.mp4""
 sample_video = cv2.VideoCapture(sample_video_path)
 
 monitor = RPPGMonitor()

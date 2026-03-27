@@ -23,11 +23,10 @@ def video_feed():
         global camera, sample_video, monitor
 
         while True:
-            # Demo mode -> dataset sample video
+            # Demo mode -> sample dataset video
             if monitor.demo_mode:
                 success, frame = sample_video.read()
 
-                # If video ends, restart it
                 if not success:
                     sample_video.release()
                     sample_video = cv2.VideoCapture(sample_video_path)
